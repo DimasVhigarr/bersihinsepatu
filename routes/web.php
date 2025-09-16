@@ -84,6 +84,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/dashboard/{id}/approve', [AdminController::class, 'approve'])->name('admin.dashboard.approve');
     Route::post('/dashboard/{id}/reject', [AdminController::class, 'reject'])->name('admin.dashboard.reject');
+    
 
     // Users
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
@@ -102,8 +103,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/quiz/manage/{id}', [QuizController::class, 'manageQuiz'])->name('admin.quiz.manage');
     Route::post('/courses/{id}/quiz', [QuizController::class, 'storeQuiz'])->name('admin.quiz.store');
     Route::get('/quiz', [QuizController::class, 'quizResults'])->name('admin.quiz.results');
-    Route::post('/quiz/approve-user/{user}', [QuizController::class, 'approveUser'])->name('admin.quiz.approveUser');
-    Route::post('/quiz/{id}/approve', [QuizController::class, 'approveQuiz'])->name('admin.quiz.approve');
 
     // Packages
     Route::get('/packages', [AdminPackageController::class, 'index'])->name('admin.packages.index');

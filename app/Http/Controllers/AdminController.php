@@ -10,6 +10,8 @@ use App\Models\Subscription;
 use App\Models\Payment;
 use App\Models\Quiz;
 use App\Models\QuizAnswer;
+use Illuminate\Support\Str;
+
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +30,7 @@ class AdminController extends Controller
     $totalUsers = User::count();
     $totalPackages = Package::count();
     $totalCourses = Course::count();
+    $totalQuizes = QuizAnswer::count();
     $totalPayments = Payment::count();
     $totalSubscriptions = Subscription::where('status', 'aktif')->count();
 
@@ -36,6 +39,7 @@ class AdminController extends Controller
         'totalUsers',
         'totalPackages',
         'totalCourses',
+        'totalQuizes',
         'totalPayments',
         'totalSubscriptions'
     ));
@@ -76,11 +80,28 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Pembayaran ditolak.');
     }
 
-    public function paymentHistory()
+    public function paymentHistory(Request $request)
 {
-    $allPayments = Payment::with(['user', 'package'])->latest()->get();
+    $query = Payment::with(['user', 'package']);
+
+    // ✅ Filter nama
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+    
+    if ($request->filled('month')) {
+        $query->whereMonth('created_at', $request->month);
+    }
+
+    if ($request->filled('year')) {
+        $query->whereYear('created_at', $request->year);
+    }
+
+    $allPayments = $query->latest()->get();
+
     return view('admin.payment_history', compact('allPayments'));
 }
+
 
 
     // View all courses
@@ -93,36 +114,86 @@ class AdminController extends Controller
 
 
     // View all subscriptions
-    public function subscriptions()
-    {
-        $subscriptions = Subscription::with(['user', 'package'])->latest()->get();
-        return view('admin.subscriptions', compact('subscriptions'));
+    public function subscriptions(Request $request)
+{
+    $query = Subscription::with(['user', 'package']);
+
+    // Filter berdasarkan bulan (dari start_date)
+    if ($request->filled('month')) {
+        $query->whereMonth('start_date', $request->month);
     }
 
-    // View all users
-    public function users()
-    {
-        $users = User::latest()->get();
-        return view('admin.users', compact('users'));
+    // Filter berdasarkan tahun (dari start_date)
+    if ($request->filled('year')) {
+        $query->whereYear('start_date', $request->year);
     }
+
+    // Filter berdasarkan status
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // ✅ Filter berdasarkan nama user
+    if ($request->filled('name')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->name . '%');
+        });
+    }
+
+    $subscriptions = $query->latest()->get();
+
+    return view('admin.subscriptions', compact('subscriptions'));
+}
+
+    // View all users
+    public function users(Request $request)
+{
+    $query = User::query();
+
+    // Filter berdasarkan nama jika ada
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    // Filter jika request mengandung bulan dan tahun
+    if ($request->filled('month') && $request->filled('year')) {
+        $query->whereMonth('created_at', $request->month)
+              ->whereYear('created_at', $request->year);
+    }
+
+    $users = $query->latest()->get();
+
+    // Kirim juga nilai pencarian ke view agar tetap muncul di form
+    $selectedMonth = $request->month;
+    $selectedYear = $request->year;
+    $searchedName = $request->name;
+
+    return view('admin.users', compact('users', 'selectedMonth', 'selectedYear', 'searchedName'));
+}
+
 
     // Store new course
     public function storeCourse(Request $request)
 {
     $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
-        'video' => 'nullable|mimes:mp4,mov,avi|max:51200',
+    'title' => 'required|string|max:255',
+    'description' => 'required|string',
+    'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+    'video' => 'nullable|mimes:mp4,mov,avi|max:51200',
 
-        // ✅ Validasi pertanyaan quiz
-        'quiz_questions.*.question' => 'required|string',
-        'quiz_questions.*.option_a' => 'required|string',
-        'quiz_questions.*.option_b' => 'required|string',
-        'quiz_questions.*.option_c' => 'required|string',
-        'quiz_questions.*.option_d' => 'required|string',
-        'quiz_questions.*.correct_answer' => 'required|in:A,B,C,D',
-    ]);
+    'quiz_questions.*.question' => 'required|string',
+    'quiz_questions.*.option_a' => 'required|string',
+    'quiz_questions.*.option_b' => 'required|string',
+    'quiz_questions.*.option_c' => 'required|string',
+    'quiz_questions.*.option_d' => 'required|string',
+    'quiz_questions.*.correct_answer' => 'required|in:A,B,C,D',
+    'quiz_questions.*.appear_time' => 'nullable|integer|min:0',
+], [
+    'image.max' => 'Ukuran foto maksimal 10MB.',
+    'image.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
+    'video.max' => 'Ukuran video maksimal 50MB.',
+    'video.mimes' => 'Format video harus mp4, mov, atau avi.',
+]);
 
     $course = new Course();
     $course->title = $request->title;
@@ -149,6 +220,7 @@ class AdminController extends Controller
                 'option_c' => $quiz['option_c'],
                 'option_d' => $quiz['option_d'],
                 'correct_answer' => $quiz['correct_answer'],
+                'appear_time' => $quiz['appear_time'] ?? null, // ✅ ini benar
             ]);
         }
     }
@@ -217,17 +289,25 @@ public function editCourse($id)
 public function updateCourse(Request $request, $id)
 {
     $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
+    'title' => 'required|string|max:255',
+    'description' => 'required|string',
+    'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+    'video' => 'nullable|mimes:mp4,mov,avi|max:51200',
 
-        // ✅ Validasi quiz
-        'quiz_questions.*.question' => 'required|string',
-        'quiz_questions.*.option_a' => 'required|string',
-        'quiz_questions.*.option_b' => 'required|string',
-        'quiz_questions.*.option_c' => 'required|string',
-        'quiz_questions.*.option_d' => 'required|string',
-        'quiz_questions.*.correct_answer' => 'required|in:A,B,C,D',
-    ]);
+    'quiz_questions' => 'nullable|array',
+    'quiz_questions.*.question' => 'nullable|string',
+    'quiz_questions.*.option_a' => 'nullable|string',
+    'quiz_questions.*.option_b' => 'nullable|string',
+    'quiz_questions.*.option_c' => 'nullable|string',
+    'quiz_questions.*.option_d' => 'nullable|string',
+    'quiz_questions.*.correct_answer' => 'nullable|in:A,B,C,D',
+    'quiz_questions.*.appear_time' => 'nullable|integer|min:0',
+], [
+    'image.max' => 'Ukuran foto maksimal 10MB.',
+    'image.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
+    'video.max' => 'Ukuran video maksimal 50MB.',
+    'video.mimes' => 'Format video harus mp4, mov, atau avi.',
+]);
 
     $course = Course::findOrFail($id);
     $course->update([
@@ -235,42 +315,48 @@ public function updateCourse(Request $request, $id)
         'description' => $request->description,
     ]);
 
-    $existingQuizIds = [];
+    // ✅ Proses quiz jika ada
+    if ($request->has('quiz_questions')) {
+        foreach ($request->quiz_questions as $key => $quiz) {
 
-    foreach ($request->quiz_questions as $quiz) {
-        if (!empty($quiz['id'])) {
-            // Update quiz
-            $q = Quiz::find($quiz['id']);
-            if ($q && $q->course_id == $course->id) {
-                $q->update([
+            // Hapus quiz jika ada flag delete
+            if (isset($quiz['id']) && isset($quiz['delete']) && $quiz['delete'] == 1) {
+                Quiz::where('id', $quiz['id'])->where('course_id', $course->id)->delete();
+                continue;
+            }
+
+            // Update quiz lama
+            if (isset($quiz['id'])) {
+                $q = Quiz::where('id', $quiz['id'])->where('course_id', $course->id)->first();
+                if ($q) {
+                    $q->update([
+                        'question' => $quiz['question'],
+                        'option_a' => $quiz['option_a'],
+                        'option_b' => $quiz['option_b'],
+                        'option_c' => $quiz['option_c'],
+                        'option_d' => $quiz['option_d'],
+                        'correct_answer' => $quiz['correct_answer'],
+                        'appear_time' => $quiz['appear_time'] ?? null,
+                    ]);
+                }
+            } else {
+                // Cek apakah input kosong
+            if (empty($quiz['question']) || empty($quiz['correct_answer'])) continue;
+            
+                // Tambah quiz baru (gunakan `new_` key untuk quiz baru)
+                Quiz::create([
+                    'course_id' => $course->id,
                     'question' => $quiz['question'],
                     'option_a' => $quiz['option_a'],
                     'option_b' => $quiz['option_b'],
                     'option_c' => $quiz['option_c'],
                     'option_d' => $quiz['option_d'],
                     'correct_answer' => $quiz['correct_answer'],
+                    'appear_time' => $quiz['appear_time'] ?? null,
                 ]);
-                $existingQuizIds[] = $q->id;
             }
-        } else {
-            // Tambah baru
-            $new = Quiz::create([
-                'course_id' => $course->id,
-                'question' => $quiz['question'],
-                'option_a' => $quiz['option_a'],
-                'option_b' => $quiz['option_b'],
-                'option_c' => $quiz['option_c'],
-                'option_d' => $quiz['option_d'],
-                'correct_answer' => $quiz['correct_answer'],
-            ]);
-            $existingQuizIds[] = $new->id;
         }
     }
-
-    // Hapus quiz yang dihapus dari UI
-    Quiz::where('course_id', $course->id)
-        ->whereNotIn('id', $existingQuizIds)
-        ->delete();
 
     return redirect()->route('admin.courses')->with('success', 'Course & Quiz berhasil diperbarui.');
 }
@@ -281,6 +367,7 @@ public function editData($id)
     $course = Course::with('quizzes')->findOrFail($id);
     return response()->json($course);
 }
+
 
 
 }

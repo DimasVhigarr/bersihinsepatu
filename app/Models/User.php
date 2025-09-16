@@ -102,6 +102,15 @@ public function hasAllApprovedQuizzes()
         ->exists();
 }
 
+public function generateCertificateCode()
+{
+    if (!$this->certificate_code) {
+        $this->certificate_code = 'BS/' . date('Y') . '/' . strtoupper(substr(md5($this->id . $this->email), 0, 8));
+        $this->save();
+    }
+}
+
+
 
 
 }

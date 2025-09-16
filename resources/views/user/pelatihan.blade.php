@@ -108,7 +108,7 @@
   <!-- Page Header -->
   <header class="bg-indigo-600 text-white py-16 px-6 sm:px-12 md:px-20 text-center max-w-7xl mx-auto rounded-b-lg shadow-lg">
    <h1 class="text-4xl font-extrabold mb-2">
-    Detail Pelatihan Bersihin.Sepatu
+    Pelatihan Bersihin.Sepatu
    </h1>
    <p class="text-indigo-200 text-lg max-w-3xl mx-auto">
     Pelajari teknik pembersihan sepatu profesional dengan materi lengkap dan sertifikat digital.
@@ -135,33 +135,65 @@
         @endforelse
     </section>
    <aside class="md:w-1/3 space-y-8">
+    {{--  1) User BELUM login  --}}
     @guest
-    <!-- Tampil hanya untuk user yang belum login -->
     <div class="bg-white rounded-lg shadow-md p-6 sticky top-20 space-y-6">
         <div>
             <h3 class="text-xl font-semibold text-indigo-700 mb-4">
                 Status Pelatihan Anda
             </h3>
             <p class="text-gray-700 mb-4">
-                Anda belum login. Silakan login atau daftar untuk mengakses video lengkap dan mendapatkan sertifikat digital.
+                Anda belum login. Silakan login atau daftar untuk mengakses video lengkap
+                dan mendapatkan sertifikat digital.
             </p>
-            <a class="block bg-indigo-600 text-white text-center py-3 rounded mb-3 hover:bg-indigo-700 transition font-semibold" href="{{ route('login') }}">
+            <a  href="{{ route('login') }}"
+                class="block bg-indigo-600 text-white text-center py-3 rounded mb-3 hover:bg-indigo-700 transition font-semibold">
                 Login
             </a>
-            <a class="block border border-indigo-600 text-indigo-600 text-center py-3 rounded hover:bg-indigo-600 hover:text-white transition font-semibold" href="{{ route('register') }}">
+            <a  href="{{ route('register') }}"
+                class="block border border-indigo-600 text-indigo-600 text-center py-3 rounded hover:bg-indigo-600 hover:text-white transition font-semibold">
                 Daftar
             </a>
         </div>
 
-        <!-- Sertifikat Digital (digabung dalam kotak yang sama) -->
         <div class="pt-4 border-t border-gray-200">
             <h3 class="text-xl font-semibold text-indigo-700 mb-3">Sertifikat Digital</h3>
             <p class="text-gray-700 text-sm">
-                Setelah menyelesaikan semua video pelatihan, Anda akan menerima sertifikat digital resmi dari <strong>Bersihin.Sepatu</strong> sebagai bukti keahlian Anda.
+                Setelah menyelesaikan semua pelatihan, Anda akan menerima
+                sertifikat digital resmi dari <strong>Bersihin.Sepatu</strong>.
             </p>
         </div>
     </div>
     @endguest
+    {{--  2) User SUDAH login tetapi BELUM berlangganan  --}}
+    @auth
+        @if(!($hasActiveSubscription ?? false))
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-20 space-y-6">
+            <div>
+                <h3 class="text-xl font-semibold text-indigo-700 mb-4">
+                    Status Pelatihan Anda
+                </h3>
+                <p class="text-gray-700 mb-4">
+                    Untuk mengakses pelatihan dan memperoleh sertifikat digital,
+                    silakan berlangganan paket Bersihin.Sepatu terlebih dahulu.
+                </p>
+
+                <a  href="{{ route('berlangganan.index') }}"
+                    class="block bg-indigo-600 text-white text-center py-3 rounded hover:bg-indigo-700 transition font-semibold">
+                    Berlangganan Sekarang
+                </a>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                <h3 class="text-xl font-semibold text-indigo-700 mb-3">Sertifikat Digital</h3>
+                <p class="text-gray-700 text-sm">
+                    Sertifikat akan tersedia setelah Anda Berlangganan dan menyelesaikan seluruh
+                    pelatihan sebagai member aktif.
+                </p>
+            </div>
+        </div>
+        @endif
+    @endauth
 </aside>
   </main>
   <!-- Footer -->

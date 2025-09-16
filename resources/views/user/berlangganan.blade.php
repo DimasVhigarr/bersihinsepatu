@@ -124,35 +124,46 @@
 </nav>
 
 {{-- Konten Form Pembayaran --}}
-<main class="flex-grow max-w-3xl mx-auto px-6 sm:px-12 py-16">
+<main class="flex-grow max-w-5xl w-full mx-auto px-6 sm:px-16 py-20">
+
     <h1 class="text-4xl font-bold text-indigo-700 mb-10 text-center">Pembayaran Paket Berlangganan</h1>
 
     <form action="{{ route('berlangganan.submit') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8 space-y-8">
         @csrf
         {{-- Pilih Paket --}}
         <section>
-            <h2 class="text-2xl font-semibold text-indigo-700 mb-4">Pilih Paket Berlangganan</h2>
-            @foreach($packages as $package)
-                <label for="package-{{ $package->id }}" class="package-label block border rounded p-4 mb-4 cursor-pointer hover:border-indigo-500">
-                    <input type="radio" id="package-{{ $package->id }}" name="package_id" value="{{ $package->id }}" required />
-                    <div class="inline-block align-middle">
-                        <p class="text-xl font-semibold mb-1">{{ $package->name }}</p>
-                        <p class="text-2xl font-extrabold text-indigo-600 mb-2">Rp {{ number_format($package->price, 0, ',', '.') }}</p>
-                        <ul class="text-gray-700 space-y-1 text-sm">
-                            @foreach(explode("\n", $package->description) as $description)
-                                <li class="flex items-start">
-                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                                    <span>{{ $description }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </label>
-            @endforeach
-            @error('package_id')
-                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-            @enderror
-        </section>
+    <h2 class="text-2xl font-semibold text-indigo-700 mb-4">Pilih Paket Berlangganan</h2>
+    @foreach($packages as $package)
+        <label for="package-{{ $package->id }}"
+            class="package-label flex justify-between items-start border rounded p-4 mb-4 cursor-pointer hover:border-indigo-500">
+            
+            {{-- Konten Paket --}}
+            <div class="inline-block align-middle">
+                <p class="text-xl font-semibold mb-1">{{ $package->name }}</p>
+                <p class="text-2xl font-extrabold text-indigo-600 mb-2">Rp {{ number_format($package->price, 0, ',', '.') }}</p>
+                <ul class="text-gray-700 space-y-1 text-sm">
+                    @foreach(explode("\n", $package->description) as $description)
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                            <span>{{ $description }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Radio Button di kanan --}}
+            <input type="radio" id="package-{{ $package->id }}" name="package_id"
+                value="{{ $package->id }}" required class="mt-2 ml-4 w-5 h-5 text-indigo-600">
+
+        </label>
+    @endforeach
+
+    {{-- Pesan error --}}
+    @error('package_id')
+        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+    @enderror
+</section>
+
 
         {{-- Informasi Diri --}}
         <section>
@@ -199,7 +210,8 @@
             {{-- Info QR Code --}}
             <div id="qr-info" class="mt-6 p-4 bg-gray-100 rounded hidden">
                 <p class="font-semibold mb-2">Scan QR Code berikut untuk membayar:</p>
-                <img src="{{ asset('images/qr.jpg') }}" alt="QR Code" class="h-40 mx-auto">
+                <img src="{{ asset('images/qr.jpg') }}" alt="QR Code" class="w-64 h-64 mx-auto">
+
             </div>
         </section>
 
@@ -207,9 +219,11 @@
         <section>
             <h2 class="text-2xl font-semibold text-indigo-700 mb-4">Upload Bukti Pembayaran</h2>
             <div>
-                <label for="payment_proof" class="block font-medium mb-2">Bukti Pembayaran (jpg, png, max 5MB)</label>
-                <input type="file" name="payment_proof" id="payment_proof" required accept=".jpg,.jpeg,.png" class="w-full border rounded px-4 py-2">
-            </div>
+    <label for="payment_proof" class="block font-medium mb-2">Bukti Pembayaran (jpg, png, max 5MB)</label>
+    <input type="file" name="payment_proof" id="payment_proof" required accept=".jpg,.jpeg,.png" class="w-full border rounded px-4 py-2">
+    <small id="paymentProofError" class="text-red-500 text-sm mt-1 block"></small>
+</div>
+
         </section>
 
         <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded hover:bg-indigo-700 text-lg font-semibold">Bayar Sekarang</button>
@@ -277,6 +291,23 @@
     }
 
     document.addEventListener("DOMContentLoaded", togglePaymentInfo);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const proofInput = document.getElementById("payment_proof");
+    const errorElement = document.getElementById("paymentProofError");
+
+    proofInput.addEventListener("change", function () {
+        const file = this.files[0];
+
+        if (file && file.size > 5 * 1024 * 1024) {
+            errorElement.textContent = "Ukuran gambar tidak boleh lebih dari 5MB!";
+            this.value = ""; // reset input
+        } else {
+            errorElement.textContent = "";
+        }
+    });
+});
+
 </script>
 </body>
 </html>

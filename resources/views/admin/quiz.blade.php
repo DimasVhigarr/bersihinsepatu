@@ -25,7 +25,7 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <div class="flex">
+    <div class="flex flex-1">
         <!-- Sidebar -->
         <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto" aria-label="Sidebar">
             <div class="sticky top-0 bg-white z-10 border-b border-gray-200 p-6 flex flex-col items-center space-y-2">
@@ -41,10 +41,10 @@
                     <i class="fas fa-users w-5"></i><span>Users</span>
                 </a>
                 <a href="/admin/packages" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
-                    <i class="fas fa-tag w-5"></i><span>Paket Berlangganan</span>
+                    <i class="fas fa-tag w-5"></i><span>Management Paket</span>
                 </a>
                 <a href="/admin/courses" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
-                    <i class="fas fa-video w-5"></i><span>Video Courses</span>
+                    <i class="fas fa-video w-5"></i><span>Management Courses</span>
                 </a>
                 <a href="/admin/quiz" class="flex items-center space-x-3 text-indigo-700 font-semibold hover:text-indigo-900">
                     <i class="fas fa-solid fa-paperclip w-5"></i><span>Hasil Course</span>
@@ -124,28 +124,32 @@
                                     <td class="px-6 py-4 text-gray-800">{{ $r->score }}</td>
                                     <td class="px-6 py-4">
                                         @if ($r->approved)
-                                            <span class="inline-block text-green-700 bg-green-100 rounded px-2 py-1 text-xs">Disetujui</span>
-                                        @else
-                                            <form method="POST" action="{{ route('admin.quiz.approve', $r->id) }}" onsubmit="return confirm('Setujui hasil quiz ini?')">
-                                                @csrf
-                                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded mb-1">Approve</button>
-                                            </form>
-                                        @endif
+    <span class="inline-block text-green-700 bg-green-100 rounded px-2 py-1 text-xs">Disetujui</span>
+@else
+    <span class="inline-block text-red-700 bg-red-100 rounded px-2 py-1 text-xs">Tidak Lulus</span>
+@endif
+
                                     </td>
 
                                     {{-- Kolom Klaim Sertifikat hanya ditampilkan di baris pertama user --}}
                                     @if ($loop->first)
-                                        <td class="px-6 py-4 text-center align-top" rowspan="{{ $userResults->count() }}">
-                                            @if ($userResults->contains('approved', false))
-                                                <form method="POST" action="{{ route('admin.quiz.approveUser', $userId) }}" onsubmit="return confirm('Setujui semua hasil quiz untuk user ini?')">
-                                                    @csrf
-                                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">Berikan Sertifikat</button>
-                                                </form>
-                                            @else
-                                                <span class="text-sm text-gray-400">Sudah disetujui</span>
-                                            @endif
-                                        </td>
-                                    @endif
+    <td class="px-6 py-4 text-center align-top" rowspan="{{ $userResults->count() }}">
+        @php
+    $user = $r->user;
+    $totalCourses = \App\Models\Course::count();
+    $answeredCourses = $userResults->pluck('course_id')->unique()->count();
+    $allScoresAbove70 = $userResults->every(fn($r) => $r->score >= 70);
+@endphp
+
+@if ($answeredCourses === $totalCourses && $allScoresAbove70)
+    <span class="text-green-700 bg-green-100 px-3 py-1 rounded text-sm">Selesai</span>
+@else
+    <span class="text-yellow-700 bg-yellow-100 px-3 py-1 rounded text-sm">Belum Selesai</span>
+@endif
+
+    </td>
+@endif
+
                                 </tr>
                             @endforeach
                         @empty

@@ -18,10 +18,14 @@ class UserBerlanggananController extends Controller
     $subscription = $user->activeSubscription;
     $package = $subscription?->package;
 
-    $courses = Course::latest()->get();
+    $courses = Course::latest()->get()->sortBy(function ($course) {
+        preg_match('/\d+/', $course->title, $matches);
+        return isset($matches[0]) ? (int) $matches[0] : 0;
+    });
 
     return view('userberlangganan.berandasubs', compact('courses', 'subscription', 'package'));
 }
+
 
 
     public function kelola()
@@ -30,12 +34,29 @@ class UserBerlanggananController extends Controller
     $subscription = $user->activeSubscription;
     $package = $subscription?->package;
 
-    // ✅ Tambahkan logika pengecekan semua quiz sudah approved
-    $quizAnswers = QuizAnswer::where('user_id', $user->id)->get();
-    $allApproved = $quizAnswers->count() > 0 && $quizAnswers->every(fn($qa) => $qa->approved);
+    $courses = Course::all();
+    $totalCourses = $courses->count();
+    $completedCourses = $user->courses()->wherePivot('is_completed', true)->count();
+    $completedAllCourses = $totalCourses > 0 && $completedCourses === $totalCourses;
 
-    return view('userberlangganan.kelolasubs', compact('user', 'subscription', 'package', 'allApproved'));
+    $quizAnswers = QuizAnswer::where('user_id', $user->id)->get();
+
+    // Logika ALL approved seperti pelatihan
+    $allApproved = true;
+    foreach ($courses as $course) {
+        $quiz = $quizAnswers->firstWhere('course_id', $course->id);
+        if (!$quiz || !$quiz->approved) {
+            $allApproved = false;
+            break;
+        }
+    }
+
+    return view('userberlangganan.kelolasubs', compact(
+        'user', 'subscription', 'package', 'allApproved', 'completedAllCourses'
+    ));
 }
+
+
 
 public function pelatihan()
 {

@@ -22,7 +22,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 </nav>
-<div class="flex ">
+<div class="flex flex-1">
    <!-- Sidebar -->
    <aside
     class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto"
@@ -61,14 +61,14 @@
       class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"
      >
       <i class="fas fa-tag w-5"></i>
-      <span>Paket Berlangganan</span>
+      <span>Management Paket</span>
      </a>
      <a
       href="/admin/courses"
       class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"
      >
       <i class="fas fa-video w-5"></i>
-      <span>Video Courses</span>
+      <span>Management Courses</span>
      </a>
      <a href="/admin/quiz" 
      class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
@@ -127,6 +127,55 @@
     </div>
         </div>
       <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <div class="flex justify-end mb-6">
+  <form method="GET" action="{{ route('admin.payments.history') }}" class="flex items-end flex-wrap gap-4">
+    <div>
+  <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+  <input 
+    type="text" 
+    name="name" 
+    id="name" 
+    value="{{ request('name') }}" 
+    placeholder="Cari nama..." 
+    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+  />
+</div>
+    <div>
+        <label for="month" class="block text-sm font-medium text-gray-700">Bulan</label>
+        <select name="month" id="month" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            <option value="">Semua</option>
+            @for ($m = 1; $m <= 12; $m++)
+                <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
+                    {{ DateTime::createFromFormat('!m', $m)->format('F') }}
+                </option>
+            @endfor
+        </select>
+    </div>
+
+    <div>
+        <label for="year" class="block text-sm font-medium text-gray-700">Tahun</label>
+        <select name="year" id="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            <option value="">Semua</option>
+            @for ($y = now()->year; $y >= 2022; $y--)
+                <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
+                    {{ $y }}
+                </option>
+            @endfor
+        </select>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+            Filter
+        </button>
+        <a href="{{ route('admin.payments.history') }}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+            Reset
+        </a>
+    </div>
+</form>
+
+</div>
+
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-indigo-100">
             <tr>
@@ -137,7 +186,6 @@
               <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider">Bukti</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider">Status</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider">Tanggal</th>
-              <th scope="col" class="relative px-6 py-3 text-center text-xs font-semibold text-indigo-700 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>

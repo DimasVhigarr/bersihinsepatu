@@ -106,7 +106,8 @@
   </nav>
 
     <!-- Profile Section -->
-    <main class="flex-grow max-w-3xl mx-auto px-6 sm:px-12 py-16">
+    <main class="flex-grow max-w-7xl mx-auto px-6 sm:px-16 py-24">
+
         <h1 class="text-4xl font-bold text-indigo-700 mb-10 text-center">Profil Saya</h1>
 
         @if(session('success'))
@@ -115,7 +116,8 @@
         </div>
         @endif
 
-        <div class="bg-white rounded-lg shadow-md p-8 space-y-10">
+        <div class="bg-white rounded-lg shadow-md p-12 space-y-12">
+
             <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-8">
                 <img 
                     src="{{ asset('images/user.jpg') }}" 
@@ -130,7 +132,8 @@
                 </div>
             </div>
 
-            <div class="border-t border-gray-200 pt-8 max-w-md mx-auto">
+            <div class="border-t border-gray-200 pt-10 max-w-3xl mx-auto">
+
     <h3 class="text-xl font-semibold text-indigo-700 mb-4 text-center">Paket Berlangganan</h3>
     <div class="bg-indigo-100 border border-indigo-600 text-indigo-700 px-6 py-4 rounded-lg font-semibold shadow text-center">
         @if($subscription)
@@ -142,28 +145,42 @@
             Tidak Berlangganan
         @endif
     </div>
-    <!-- Sertifikat -->
-<div class="bg-white rounded-lg shadow-md p-6 mt-8">
-    <h3 class="text-xl font-semibold text-indigo-700 mb-4 text-center">Sertifikat Digital</h3>
-    <p class="text-gray-700 mb-4 text-center">
-        Selesaikan semua pelatihan <strong>dan quiz yang disetujui admin</strong> untuk mendapatkan sertifikat resmi.
-    </p>
+    <!-- Sertifikat Digital -->
+<div class="pt-6 border-t border-gray-200">
+  <h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Sertifikat Digital</h3>
+  <p class="text-gray-700 mb-4 text-sm text-center">
+    Klik tombol di bawah ini untuk melihat atau mengunduh sertifikat Anda.
+  </p>
 
-    <button 
-        class="w-full text-white font-semibold px-4 py-3 rounded 
-            {{ $allApproved ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed' }}"
-        {{ $allApproved ? '' : 'disabled' }}
-        onclick="if({{ $allApproved ? 'true' : 'false' }}) window.location='{{ route('subs.sertifikat') }}';"
-    >
+  @if ($completedAllCourses && $allApproved)
+    <form action="{{ route('preview.sertifikat') }}" method="GET" target="_blank">
+      <button 
+        type="submit"
+        class="w-full font-semibold px-4 py-3 rounded transition bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+      >
         Lihat Sertifikat
+      </button>
+    </form>
+  @else
+    <button 
+      type="button"
+      class="w-full font-semibold px-4 py-3 rounded transition bg-gray-300 text-gray-500 cursor-not-allowed"
+      disabled
+    >
+      Sertifikat Belum Tersedia
     </button>
+  @endif
 </div>
+
+
+
 </div>
             </div>
         </div>
 
         <!-- Edit Profile Form -->
-        <section class="bg-white rounded-lg shadow-md p-8 mt-12 max-w-xl mx-auto hidden" id="edit-profile">
+        <section class="bg-white rounded-lg shadow-md p-12 mt-16 max-w-3xl mx-auto hidden" id="edit-profile">
+
             <h2 class="text-3xl font-bold text-indigo-700 mb-6 text-center">Edit Profil</h2>
 
             <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">

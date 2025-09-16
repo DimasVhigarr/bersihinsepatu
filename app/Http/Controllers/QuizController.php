@@ -78,29 +78,6 @@ class QuizController extends Controller
 }
 
 
-    public function approveUser($userId)
-{
-    $user = User::findOrFail($userId); // validasi user ada
-
-    QuizAnswer::where('user_id', $userId)->update([
-        'approved' => true,
-        'updated_at' => now(),
-    ]);
-
-    return redirect()->back()->with('success', 'Semua quiz user telah disetujui.');
-}
-
-
-    // Menyetujui jawaban quiz tertentu
-    public function approveQuiz($id)
-    {
-        $answer = QuizAnswer::findOrFail($id);
-        $answer->approved = true;
-        $answer->save();
-
-        return back()->with('success', 'Quiz disetujui untuk: ' . $answer->user->name);
-    }
-
    public function submit(Request $request, $courseId)
 {
     $userId = auth()->id();
@@ -123,13 +100,15 @@ class QuizController extends Controller
                           ->where('course_id', $courseId)
                           ->first();
 
-    // Update hanya jika skor baru lebih tinggi
     if (!$existing || $score > $existing->score) {
-        QuizAnswer::updateOrCreate(
-            ['user_id' => $userId, 'course_id' => $courseId],
-            ['score' => $score, 'approved' => false]
-        );
-    }
+    QuizAnswer::updateOrCreate(
+        ['user_id' => $userId, 'course_id' => $courseId],
+        [
+            'score' => $score,
+            'approved' => $score >= 70, // ✅ otomatis setujui jika skor >= 70
+        ]
+    );
+}
 
     return redirect()->back()->with('success', 'Quiz berhasil dikirim.');
 }

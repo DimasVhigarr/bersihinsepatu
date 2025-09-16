@@ -55,7 +55,7 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('berlangganan.index')->with('success', 'Pembayaran berhasil dikirim.');
+        return redirect()->route('berlangganan.index')->with('success', 'Pembayaran berhasil dikirim dan Sedang Menunggu Persetujuan Admin.');
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
     }

@@ -17,6 +17,7 @@ class Quiz extends Model
         'option_c',
         'option_d',
         'correct_answer',
+        'appear_time', // ✅ HARUS ADA
     ];
 
     public function course()

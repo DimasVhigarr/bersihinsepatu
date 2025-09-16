@@ -107,7 +107,7 @@
   <!-- Page Header -->
   <header class="bg-indigo-600 text-white py-16 px-6 sm:px-12 md:px-20 text-center max-w-7xl mx-auto rounded-b-lg shadow-lg">
    <h1 class="text-4xl font-extrabold mb-2">
-    Detail Pelatihan Bersihin.Sepatu
+    Pelatihan Bersihin.Sepatu
    </h1>
    <p class="text-indigo-200 text-lg max-w-3xl mx-auto">
     Pelajari teknik pembersihan sepatu profesional dengan materi lengkap dan sertifikat digital.
@@ -126,7 +126,7 @@
                     $status = $coursesStatus[$course->id] ?? 'incomplete';
                     $badge = match ($status) {
                         'approved' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'icon' => '✅', 'label' => 'Selesai & Disetujui'],
-                        'waiting' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'icon' => '🕒', 'label' => 'Menunggu Persetujuan'],
+                        'waiting' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700', 'icon' => '🕒', 'label' => 'Perbaiki Course Anda!'],
                         default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-700', 'icon' => '❌', 'label' => 'Belum Selesai'],
                     };
                 @endphp
@@ -146,7 +146,7 @@
             </p>
             <a href="{{ url('/video/' . $course->slug) }}"
                 class="mt-4 inline-block bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 transition font-semibold mx-auto">
-                Tonton Video Eksklusif
+                Tonton Video 
             </a>
         </article>
         @empty
@@ -155,16 +155,19 @@
     </section>
    <aside class="md:w-1/3 space-y-8">
   <div class="bg-white rounded-lg shadow-md p-6 sticky top-20 space-y-6">
-    <h3 class="text-xl font-semibold text-indigo-700 mb-4">
+    <h3 class="text-xl font-semibold text-indigo-700 mb-4 text-center">
       Status Pelatihan Anda
     </h3>
 
     @if($package)
-      <p class="text-gray-700">
+      <p class="text-gray-700 text-center">
         Anda sudah berlangganan dan memiliki akses penuh ke semua video pelatihan dan materi eksklusif.
       </p>
-      <div class="inline-block bg-indigo-100 border border-indigo-600 text-indigo-700 px-6 py-3 rounded-lg font-semibold shadow">
-        {{ $package->name }} - Rp {{ number_format($package->price, 0, ',', '.') }}
+      <div
+          class="block w-max mx-auto
+                bg-indigo-100 border border-indigo-600 text-indigo-700
+                px-6 py-3 rounded-lg font-semibold shadow">
+          {{ $package->name }} – Rp {{ number_format($package->price, 0, ',', '.') }}
       </div>
       <a class="block bg-indigo-600 text-white text-center py-3 rounded hover:bg-indigo-700 transition font-semibold" href="/subs/kelola">
         Kelola Akun Saya
@@ -172,8 +175,8 @@
 
       <!-- Sertifikat Digital -->
       <div class="pt-6 border-t border-gray-200">
-        <h3 class="text-xl font-semibold text-indigo-700 mb-3">Sertifikat Digital</h3>
-        <p class="text-gray-700 mb-4 text-sm">
+        <h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Sertifikat Digital</h3>
+        <p class="text-gray-700 mb-4 text-sm text-center">
           Klik tombol di bawah ini untuk melihat atau mengunduh sertifikat Anda.
         </p>
 

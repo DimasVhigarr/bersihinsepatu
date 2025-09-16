@@ -38,7 +38,7 @@
    </div>
   </nav>
 
-  <div class="flex ">
+  <div class="flex flex-1">
    <!-- Sidebar -->
    <aside
     class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto"
@@ -77,14 +77,14 @@
       class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"
      >
       <i class="fas fa-tag w-5"></i>
-      <span>Paket Berlangganan</span>
+      <span>Management Paket</span>
      </a>
      <a
       href="/admin/courses"
       class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"
      >
       <i class="fas fa-video w-5"></i>
-      <span>Video Courses</span>
+      <span>Management Courses</span>
      </a>
      <a href="/admin/quiz" 
      class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
@@ -144,6 +144,62 @@
     </div>
         </div>
      <div class="overflow-x-auto bg-white rounded-lg shadow">
+      <div class="flex justify-end">
+  <form method="GET" class="flex flex-wrap items-end gap-4 bg-white p-4 rounded shadow">
+    <div>
+  <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+  <input 
+    type="text" 
+    name="name" 
+    id="name" 
+    value="{{ request('name') }}" 
+    placeholder="Cari nama pengguna..." 
+    class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600"
+  />
+</div>
+    <div>
+        <label for="month" class="block text-sm font-medium text-gray-700">Bulan</label>
+        <select name="month" id="month" class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600">
+            <option value="">Bulan</option>
+            @foreach(range(1, 12) as $m)
+                <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
+                    {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label for="year" class="block text-sm font-medium text-gray-700">Tahun</label>
+        <select name="year" id="year" class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600">
+            <option value="">Tahun</option>
+            @for ($y = now()->year; $y >= 2023; $y--)
+                <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endfor
+        </select>
+    </div>
+
+    <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select name="status" id="status" class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600">
+            <option value="">Status</option>
+            <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="Expired" {{ request('status') == 'Expired' ? 'selected' : '' }}>Expired</option>
+        </select>
+    </div>
+
+    <div class="flex items-center gap-2 mt-6">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+            Filter
+        </button>
+        <a href="{{ route('admin.subscriptions') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100 transition">
+            Reset
+        </a>
+    </div>
+</form>
+
+</div>
+
       <table class="min-w-full divide-y divide-gray-200">
        <thead class="bg-indigo-100">
         <tr>
@@ -176,9 +232,6 @@
           class="px-6 py-3 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider"
          >
           End Date
-         </th>
-         <th scope="col" class="relative px-6 py-3 text-center text-xs font-semibold text-indigo-700 uppercase tracking-wider">
-          Actions
          </th>
         </tr>
        </thead>

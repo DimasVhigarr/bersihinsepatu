@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bersihin.Sepatu - Courses</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
@@ -19,6 +21,7 @@
       border-radius: 4px;
     }
   </style>
+
  </head>
  <body class="bg-gray-50 min-h-screen flex flex-col">
   <header class="p-4 flex justify-between items-center shadow-md bg-white md:hidden">
@@ -38,7 +41,7 @@
       <a href="/admin/dashboard" class="block text-gray-700 hover:text-indigo-700">Dashboard</a>
       <a href="/admin/users" class="block text-gray-700 hover:text-indigo-700">Users</a>
       <a href="/admin/packages" class="block text-gray-700 hover:text-indigo-700">Paket Berlangganan</a>
-      <a href="/admin/courses" class="block font-semibold text-indigo-700 hover:text-indigo-900">Video Courses</a>
+      <a href="/admin/courses" class="block font-semibold text-indigo-700 hover:text-indigo-900">Management Courses</a>
       <a href="/admin/subscriptions" class="block text-gray-700 hover:text-indigo-700">Subscriptions</a>
       <a href="/admin/payments/history" class="block text-gray-700 hover:text-indigo-700">Payments History</a>
       <form method="POST" action="/logout" onsubmit="return confirmLogout(event)">
@@ -48,7 +51,7 @@
     </div>
   </div>
 
-  <div class="flex">
+  <div class="flex flex-1">
     <!-- Desktop Sidebar -->
     <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto">
       <div class="sticky top-0 bg-white z-10 border-b border-gray-200 p-6 flex flex-col items-center space-y-2">
@@ -59,8 +62,8 @@
         <p class="text-sm font-bold text-gray-400 mb-2">MENU</p>
         <a href="/admin/dashboard" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"><i class="fas fa-tachometer-alt w-5"></i><span>Dashboard</span></a>
         <a href="/admin/users" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"><i class="fas fa-users w-5"></i><span>Users</span></a>
-        <a href="/admin/packages" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"><i class="fas fa-tag w-5"></i><span>Paket Berlangganan</span></a>
-        <a href="/admin/courses" class="flex items-center space-x-3 text-indigo-700 font-semibold hover:text-indigo-900"><i class="fas fa-video w-5"></i><span>Video Courses</span></a>
+        <a href="/admin/packages" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"><i class="fas fa-tag w-5"></i><span>Management Paket</span></a>
+        <a href="/admin/courses" class="flex items-center space-x-3 text-indigo-700 font-semibold hover:text-indigo-900"><i class="fas fa-video w-5"></i><span>Management Courses</span></a>
         <a href="/admin/quiz" 
      class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
       <i class="fas fa-solid fa-paperclip w-5"></i><span>Hasil Course</span>
@@ -70,7 +73,7 @@
       </nav>
       <div class="p-6 border-t border-gray-200 mt-auto">
         <form method="POST" action="/logout" onsubmit="return confirmLogout(event)">
-          <!-- @csrf -->
+          @csrf
           <button type="submit" class="w-full px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-600 hover:text-white transition">Logout</button>
         </form>
       </div>
@@ -80,7 +83,7 @@
 <main class="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto space-y-8">
     <section>
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-5xl font-bold text-indigo-700">Video Courses</h2>
+            <h2 class="text-5xl font-bold text-indigo-700">Management Courses</h2>
             <div class="relative inline-block text-left">
         <button onclick="toggleDropdown()" class="flex items-center focus:outline-none">
             <h3 class="text-gray-500 text-lg font-bold mr-3 uppercase">
@@ -143,12 +146,16 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700">Image</label>
-          <input type="file" name="image" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600" />
+          <input type="file" name="image" id="addImageInput" class="mt-1 block w-full rounded-md ...">
+<small id="addImageError" class="text-red-500 text-sm"></small>
+
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700">Video</label>
-          <input type="file" name="video" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600" />
+          <input type="file" name="video" id="addVideoInput" class="mt-1 block w-full rounded-md ...">
+<small id="addVideoError" class="text-red-500 text-sm"></small>
+
         </div>
 
         {{-- Quiz Section --}}
@@ -157,6 +164,8 @@
           <div id="quiz-list" class="space-y-4">
             <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
               <input type="text" name="quiz_questions[0][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" required />
+              <input type="number" name="quiz_questions[0][appear_time]" placeholder="Muncul di detik ke-" class="w-full border rounded px-3 py-2" min="0" />
+
               <input type="text" name="quiz_questions[0][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" required />
               <input type="text" name="quiz_questions[0][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" required />
               <input type="text" name="quiz_questions[0][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" required />
@@ -263,74 +272,128 @@
             </div>
 
             <!-- Gambar -->
-            <div>
-                <label class="block text-sm font-semibold">Gambar Saat Ini</label><br>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold">Gambar Saat Ini</label>
                 @if ($course->image)
                     <img src="{{ asset('storage/' . $course->image) }}" alt="Image" class="h-16 w-16 rounded mb-2">
                 @else
                     <p class="text-sm text-gray-500">-</p>
                 @endif
-                <input type="file" name="image" class="mt-1">
+
+                <div class="mt-1">
+                    <input type="file" name="image" id="editImageInput-{{ $course->id }}" class="block w-full">
+                    <small id="editImageError-{{ $course->id }}" class="text-red-500 text-sm block mt-1"></small>
+                </div>
             </div>
 
+
             <!-- Video -->
-            <div>
-                <label class="block text-sm font-semibold">Video Saat Ini</label><br>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold">Video Saat Ini</label>
                 @if ($course->video)
-                    <a href="{{ asset('storage/' . $course->video) }}" class="text-indigo-600" target="_blank">Lihat Video</a>
+                    <a href="{{ asset('storage/' . $course->video) }}" class="text-indigo-600 inline-block mb-2" target="_blank">Lihat Video</a>
                 @else
                     <p class="text-sm text-gray-500">-</p>
                 @endif
-                <input type="file" name="video" class="mt-1">
-            </div>
 
-            <!-- Quiz Edit Section -->
-            <div id="edit-quiz-section-{{ $course->id }}" class="mt-6">
-                <h4 class="text-lg font-semibold text-gray-700 mb-2">Edit Quiz</h4>
-
-                <div id="edit-quiz-list-{{ $course->id }}" class="space-y-4">
-                    @foreach ($course->quizzes as $index => $quiz)
-                        <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
-                            <input type="hidden" name="quiz_questions[{{ $index }}][id]" value="{{ $quiz->id }}">
-                            <input type="text" name="quiz_questions[{{ $index }}][question]" value="{{ $quiz->question }}" class="w-full border rounded px-3 py-2" placeholder="Pertanyaan" required />
-                            <input type="text" name="quiz_questions[{{ $index }}][option_a]" value="{{ $quiz->option_a }}" class="w-full border rounded px-3 py-2" placeholder="Pilihan A" required />
-                            <input type="text" name="quiz_questions[{{ $index }}][option_b]" value="{{ $quiz->option_b }}" class="w-full border rounded px-3 py-2" placeholder="Pilihan B" required />
-                            <input type="text" name="quiz_questions[{{ $index }}][option_c]" value="{{ $quiz->option_c }}" class="w-full border rounded px-3 py-2" placeholder="Pilihan C" required />
-                            <input type="text" name="quiz_questions[{{ $index }}][option_d]" value="{{ $quiz->option_d }}" class="w-full border rounded px-3 py-2" placeholder="Pilihan D" required />
-
-                            <label class="block text-sm mt-1">Jawaban Benar</label>
-                            <select name="quiz_questions[{{ $index }}][correct_answer]" class="w-full border rounded px-3 py-2" required>
-                                <option value="">-- Pilih Jawaban Benar --</option>
-                                <option value="A" @if(strtoupper($quiz->correct_answer) === 'A') selected @endif>A</option>
-                                <option value="B" @if(strtoupper($quiz->correct_answer) === 'B') selected @endif>B</option>
-                                <option value="C" @if(strtoupper($quiz->correct_answer) === 'C') selected @endif>C</option>
-                                <option value="D" @if(strtoupper($quiz->correct_answer) === 'D') selected @endif>D</option>
-                            </select>
-                            <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
-                        </div>
-                    @endforeach
+                <div class="mt-1">
+                    <input type="file" name="video" id="editVideoInput-{{ $course->id }}" class="block w-full">
+                    <small id="editVideoError-{{ $course->id }}" class="text-red-500 text-sm block mt-1"></small>
                 </div>
-
-                <!-- Tombol Tambah Pertanyaan -->
-<button type="button" onclick="addQuizEdit({{ $course->id }})" class="mt-2 px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-  + Tambah Pertanyaan
-</button>
-            
-
-            <!-- Tombol Simpan -->
-            <div class="text-right pt-4">
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Simpan</button>
             </div>
-        </form>
-    </div>
+
+
+            <!-- Quiz Lama -->
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Quiz Questions (Lama)</label>
+          <div class="space-y-4">
+            @foreach ($course->quizzes as $index => $quiz)
+  <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
+    <input type="hidden" name="quiz_questions[{{ $quiz->id }}][id]" value="{{ $quiz->id }}">
+    <input type="hidden" name="quiz_questions[{{ $quiz->id }}][delete]" class="quiz-delete-flag" value="0">
+
+    <input type="text" name="quiz_questions[{{ $quiz->id }}][question]" placeholder="Pertanyaan" value="{{ $quiz->question }}" class="w-full border rounded px-3 py-2" required />
+
+    {{-- Tambahkan appear_time --}}
+    <input type="number" name="quiz_questions[{{ $quiz->id }}][appear_time]" placeholder="Muncul di detik ke-" value="{{ $quiz->appear_time }}" class="w-full border rounded px-3 py-2" min="0" />
+
+    <input type="text" name="quiz_questions[{{ $quiz->id }}][option_a]" placeholder="Pilihan A" value="{{ $quiz->option_a }}" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[{{ $quiz->id }}][option_b]" placeholder="Pilihan B" value="{{ $quiz->option_b }}" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[{{ $quiz->id }}][option_c]" placeholder="Pilihan C" value="{{ $quiz->option_c }}" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[{{ $quiz->id }}][option_d]" placeholder="Pilihan D" value="{{ $quiz->option_d }}" class="w-full border rounded px-3 py-2" required />
+
+    <label class="block text-sm mt-1">Jawaban Benar</label>
+    <select name="quiz_questions[{{ $quiz->id }}][correct_answer]" class="w-full border rounded px-3 py-2" required>
+      <option value="">-- Pilih Jawaban Benar --</option>
+      @foreach(['A','B','C','D'] as $opt)
+        <option value="{{ $opt }}" @if(strtoupper($quiz->correct_answer) == $opt) selected @endif>{{ $opt }}</option>
+      @endforeach
+    </select>
+
+    {{-- Tombol Hapus --}}
+    <button type="button" onclick="hapusQuizLama(this)" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
+  </div>
+@endforeach
+
+          </div>
+        </div>
+
+
+
+                <!-- Tambah Quiz Baru (Hidden until button clicked) -->
+        <div x-data="{ showNewQuiz: false }" class="mt-4">
+          <button type="button"
+            @click="showNewQuiz = !showNewQuiz"
+            class="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 mb-2">
+            + Tambah Pertanyaan
+          </button>
+
+          <div x-show="showNewQuiz" class="space-y-4" x-transition>
+  <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
+    <input type="text" name="quiz_questions[new_1][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" />
+
+    <input type="number" name="quiz_questions[new_1][appear_time]" placeholder="Muncul di detik ke-" class="w-full border rounded px-3 py-2" min="0" />
+
+    <input type="text" name="quiz_questions[new_1][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" />
+    <input type="text" name="quiz_questions[new_1][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" />
+    <input type="text" name="quiz_questions[new_1][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" />
+    <input type="text" name="quiz_questions[new_1][option_d]" placeholder="Pilihan D" class="w-full border rounded px-3 py-2" />
+
+    <label class="block text-sm mt-1">Jawaban Benar</label>
+    <select name="quiz_questions[new_1][correct_answer]" class="w-full border rounded px-3 py-2">
+      <option value="">-- Pilih Jawaban Benar --</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+  </div>
 </div>
+
+        </div>
+
+
+
+            <!-- Tombol Simpan dan Batal -->
+        <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+          <button type="button" class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition" onclick="document.getElementById('editModal-{{ $course->id }}').classList.add('hidden')">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
     @endforeach  {{-- ✅ Ini yang wajib ditambahkan --}}
 </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+  </div>
 
-
-
-
-  <!-- Footer -->
+<!-- Footer -->
   <footer class="bg-indigo-700 text-indigo-200 py-8 mt-auto">
    <div
     class="max-w-7xl mx-auto px-6 sm:px-12 flex flex-col md:flex-row justify-between items-center"
@@ -352,6 +415,12 @@
     </div>
    </div>
   </footer>
+
+
+
+
+
+  
 
   <script>
   // Inisialisasi map index quiz edit (penting: letakkan di awal!)
@@ -430,70 +499,149 @@
   let quizIndex = document.querySelectorAll("#quiz-list .quiz-item").length;
 
   function addQuiz() {
-    const quizList = document.getElementById("quiz-list");
-    const quizItem = document.createElement("div");
-    quizItem.className = "quiz-item border p-4 rounded-md bg-gray-50 space-y-2";
+  const quizList = document.getElementById("quiz-list");
+  const quizItem = document.createElement("div");
+  quizItem.className = "quiz-item border p-4 rounded-md bg-gray-50 space-y-2";
 
-    quizItem.innerHTML = `
-      <input type="text" name="quiz_questions[${quizIndex}][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${quizIndex}][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${quizIndex}][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${quizIndex}][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${quizIndex}][option_d]" placeholder="Pilihan D" class="w-full border rounded px-3 py-2" required />
-      <label class="block text-sm mt-1">Jawaban Benar</label>
-      <select name="quiz_questions[${quizIndex}][correct_answer]" class="w-full border rounded px-3 py-2" required>
-        <option value="">-- Pilih Jawaban Benar --</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-      </select>
-      <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
-    `;
+  quizItem.innerHTML = `
+    <input type="text" name="quiz_questions[${quizIndex}][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" required />
+    <input type="number" name="quiz_questions[${quizIndex}][appear_time]" placeholder="Muncul di detik ke-" class="w-full border rounded px-3 py-2" min="0" />
 
-    quizList.appendChild(quizItem);
-    quizIndex++;
-  }
-
-  window.addQuiz = addQuiz; // agar bisa dipanggil dari HTML
-
-  // Quiz untuk modal EDIT
-  function addQuizEdit(courseId) {
-  const quizList = document.getElementById(`edit-quiz-list-${courseId}`);
-  if (!quizList) return;
-
-  if (!quizEditIndexMap[courseId]) {
-    quizEditIndexMap[courseId] = quizList.querySelectorAll('.quiz-item').length;
-  }
-
-  const index = quizEditIndexMap[courseId]++;
-
-  const html = `
-    <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
-      <input type="text" name="quiz_questions[${index}][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${index}][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${index}][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${index}][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" required />
-      <input type="text" name="quiz_questions[${index}][option_d]" placeholder="Pilihan D" class="w-full border rounded px-3 py-2" required />
-
-      <label class="block text-sm mt-1">Jawaban Benar</label>
-      <select name="quiz_questions[${index}][correct_answer]" class="w-full border rounded px-3 py-2" required>
-        <option value="">-- Pilih Jawaban Benar --</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-      </select>
-
-      <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
-    </div>
+    <input type="text" name="quiz_questions[${quizIndex}][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[${quizIndex}][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[${quizIndex}][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" required />
+    <input type="text" name="quiz_questions[${quizIndex}][option_d]" placeholder="Pilihan D" class="w-full border rounded px-3 py-2" required />
+    
+    <label class="block text-sm mt-1">Jawaban Benar</label>
+    <select name="quiz_questions[${quizIndex}][correct_answer]" class="w-full border rounded px-3 py-2" required>
+      <option value="">-- Pilih Jawaban Benar --</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+    <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
   `;
 
-  quizList.insertAdjacentHTML("beforeend", html);
+  quizList.appendChild(quizItem);
+  quizIndex++;
 }
 
 
-  window.addQuizEdit = addQuizEdit;
+  window.addQuiz = addQuiz; // agar bisa dipanggil dari HTML
+
+//   // Quiz untuk modal EDIT
+//   function addQuizEdit(courseId) {
+//   const quizList = document.getElementById(`edit-quiz-list-${courseId}`);
+//   if (!quizList) return;
+
+//   if (!quizEditIndexMap[courseId]) {
+//     quizEditIndexMap[courseId] = quizList.querySelectorAll('.quiz-item').length;
+//   }
+
+//   const index = quizEditIndexMap[courseId]++;
+
+//   const html = `
+//     <div class="quiz-item border p-4 rounded-md bg-gray-50 space-y-2">
+//       <input type="text" name="quiz_questions[${index}][question]" placeholder="Pertanyaan" class="w-full border rounded px-3 py-2" required />
+//       <input type="text" name="quiz_questions[${index}][option_a]" placeholder="Pilihan A" class="w-full border rounded px-3 py-2" required />
+//       <input type="text" name="quiz_questions[${index}][option_b]" placeholder="Pilihan B" class="w-full border rounded px-3 py-2" required />
+//       <input type="text" name="quiz_questions[${index}][option_c]" placeholder="Pilihan C" class="w-full border rounded px-3 py-2" required />
+//       <input type="text" name="quiz_questions[${index}][option_d]" placeholder="Pilihan D" class="w-full border rounded px-3 py-2" required />
+
+//       <label class="block text-sm mt-1">Jawaban Benar</label>
+//       <select name="quiz_questions[${index}][correct_answer]" class="w-full border rounded px-3 py-2" required>
+//         <option value="">-- Pilih Jawaban Benar --</option>
+//         <option value="A">A</option>
+//         <option value="B">B</option>
+//         <option value="C">C</option>
+//         <option value="D">D</option>
+//       </select>
+
+//       <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:underline text-sm mt-1">Hapus Pertanyaan</button>
+//     </div>
+//   `;
+
+//   quizList.insertAdjacentHTML("beforeend", html);
+// }
+
+
+//   window.addQuizEdit = addQuizEdit;
+
+function hapusQuizLama(button) {
+  const container = button.closest('.quiz-item');
+  const deleteInput = container.querySelector('.quiz-delete-flag');
+  if (deleteInput) {
+    deleteInput.value = 1;
+    container.classList.add('hidden');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // ADD COURSE
+    const addImageInput = document.getElementById('addImageInput');
+    const addVideoInput = document.getElementById('addVideoInput');
+    const addImageError = document.getElementById('addImageError');
+    const addVideoError = document.getElementById('addVideoError');
+
+    if (addImageInput) {
+        addImageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file && file.size > 10 * 1024 * 1024) {
+                addImageError.textContent = 'Ukuran gambar maksimal 10MB!';
+                this.value = '';
+            } else {
+                addImageError.textContent = '';
+            }
+        });
+    }
+
+    if (addVideoInput) {
+        addVideoInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file && file.size > 50 * 1024 * 1024) {
+                addVideoError.textContent = 'Ukuran video maksimal 50MB!';
+                this.value = '';
+            } else {
+                addVideoError.textContent = '';
+            }
+        });
+    }
+
+    // EDIT COURSE: jalankan untuk setiap course
+    @foreach ($courses as $course)
+        const editImageInput{{ $course->id }} = document.getElementById('editImageInput-{{ $course->id }}');
+        const editVideoInput{{ $course->id }} = document.getElementById('editVideoInput-{{ $course->id }}');
+        const editImageError{{ $course->id }} = document.getElementById('editImageError-{{ $course->id }}');
+        const editVideoError{{ $course->id }} = document.getElementById('editVideoError-{{ $course->id }}');
+
+        if (editImageInput{{ $course->id }}) {
+            editImageInput{{ $course->id }}.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file && file.size > 10 * 1024 * 1024) {
+                    editImageError{{ $course->id }}.textContent = 'Ukuran gambar maksimal 10MB!';
+                    this.value = '';
+                } else {
+                    editImageError{{ $course->id }}.textContent = '';
+                }
+            });
+        }
+
+        if (editVideoInput{{ $course->id }}) {
+            editVideoInput{{ $course->id }}.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file && file.size > 50 * 1024 * 1024) {
+                    editVideoError{{ $course->id }}.textContent = 'Ukuran video maksimal 50MB!';
+                    this.value = '';
+                } else {
+                    editVideoError{{ $course->id }}.textContent = '';
+                }
+            });
+        }
+    @endforeach
+});
+
+
 
 </script>
 

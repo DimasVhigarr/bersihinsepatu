@@ -20,6 +20,7 @@ return new class extends Migration
     $table->string('option_c');
     $table->string('option_d');
     $table->string('correct_answer'); // A, B, C, D
+    $table->integer('appear_time')->nullable(); // ✅ Tambahkan ini
     $table->timestamps();
 });
 

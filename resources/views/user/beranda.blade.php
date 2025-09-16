@@ -148,7 +148,7 @@
      <div class="flex flex-col items-center text-center space-y-4 px-6">
       <img alt="Icon representing exclusive content, a locked video tutorial screen" class="w-24 h-24" height="100" src="https://storage.googleapis.com/a1aa/image/5f4d6101-fc65-458d-1162-8a074d5e6337.jpg" width="100"/>
       <h3 class="text-xl font-semibold text-indigo-600">
-       Konten Eksklusif
+       Fitur Membership
       </h3>
       <p class="text-gray-600">
        Akses video tutorial dan materi manajemen usaha yang hanya tersedia untuk member berlangganan.
@@ -170,7 +170,7 @@
 <section class="py-16 bg-indigo-50" id="courses">
   <div class="max-w-7xl mx-auto px-6 sm:px-12">
     <h2 class="text-3xl font-bold text-indigo-700 mb-12 text-center">
-      Video Tutorial Pelatihan
+      Daftar Pelatihan
     </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

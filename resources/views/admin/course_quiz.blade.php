@@ -37,6 +37,12 @@
                             {{ strtoupper($quiz->correct_answer) }}
                         </span>
                     </p>
+                    <p class="mt-3 text-sm text-gray-500">
+                        Jawaban Muncul di Quiz Detik:
+                        <span class="font-semibold text-indigo-700 uppercase">
+                            {{ strtoupper($quiz->appear_time) }}
+                        </span>
+                    </p>
                 </div>
             @endforeach
         </div>

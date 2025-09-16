@@ -86,7 +86,8 @@
     <h1 class="text-3xl font-bold text-indigo-700 mb-6 text-center">{{ $course->title }}</h1>
 
     {{-- Video --}}
-    <div class="w-full aspect-[16/9] mb-6 rounded shadow-lg overflow-hidden">
+    <div class="w-full aspect-[16/9] mb-12 rounded-xl shadow-2xl overflow-hidden max-w-6xl mx-auto">
+
         <video 
             controls 
             class="w-full h-full object-cover"
@@ -96,6 +97,37 @@
             <source src="{{ asset('storage/' . $course->video) }}" type="video/mp4">
             Browser Anda tidak mendukung pemutaran video.
         </video>
+        <div id="quiz-popup" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden transition duration-300 ease-in-out">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl p-8 relative border-t-8 border-indigo-600">
+        <!-- Instruksi -->
+        <p class="text-center text-l text-gray-600 mb-4 font-large">
+            Jawablah Quiz ini untuk melanjutkan Video:
+        </p>
+
+        <!-- Pertanyaan -->
+        <h2 id="quiz-question" class="text-xl md:text-2xl font-bold text-indigo-700 mb-6 text-center leading-snug"></h2>
+
+        <!-- Opsi jawaban -->
+        <div id="quiz-options" class="space-y-3"></div>
+
+        <!-- Tombol lanjut -->
+        <div class="mt-6 text-center">
+            <button onclick="closeQuiz()" class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-full shadow transition">
+                Lanjutkan Video
+            </button>
+        </div>
+
+        <!-- Tombol close -->
+        <button onclick="closeQuiz()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+</div>
+
     </div>
 
     {{-- Deskripsi --}}
@@ -123,14 +155,15 @@
         Anda sudah mengisi quiz ini. Skor Anda: {{ $quizAnswer->score }}.
     </div>
 
-    <div class="text-center mt-4">
-        <form method="POST" action="{{ route('quiz.retry', $course->id) }}">
-            @csrf
-            <button type="submit" class="text-red-600 underline hover:text-red-800 text-sm">
-                Ulangi Quiz
-            </button>
-        </form>
-    </div>
+    <div class="text-center mt-6">
+    <form method="POST" action="{{ route('quiz.retry', $course->id) }}">
+        @csrf
+        <button type="submit" class="px-6 py-2 bg-red-600 text-white text-sm font-semibold rounded hover:bg-red-700 transition duration-200">
+            Ulangi Quiz
+        </button>
+    </form>
+</div>
+
 @else
     {{-- Form Quiz --}}
     <form method="POST" action="{{ route('quiz.submit', $course->id) }}">
@@ -169,6 +202,7 @@
 @endif
 </div>
 @endif
+    </div>
     
     <!-- Footer -->
   <footer class="bg-indigo-700 text-indigo-200 py-8 mt-auto">
@@ -192,7 +226,27 @@
     </div>
    </div>
   </footer>
+
+  {{-- Pindahkan ini ke atas sebelum script --}}
+@php
+$quizData = $course->quizzes->map(function ($quiz) {
+    return [
+        'id' => $quiz->id,
+        'question' => $quiz->question,
+        'option_a' => $quiz->option_a,
+        'option_b' => $quiz->option_b,
+        'option_c' => $quiz->option_c,
+        'option_d' => $quiz->option_d,
+        'correct_answer' => $quiz->correct_answer,
+        'appear_time' => $quiz->appear_time,
+        'shown' => false
+    ];
+});
+@endphp
+
   <script>
+    const quizzes = {!! json_encode($quizData) !!};
+
    // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -222,18 +276,48 @@
     });
 
     document.addEventListener("keydown", function(e) {
-    // Blok PrintScreen
-    if (e.key === "PrintScreen") {
-      navigator.clipboard.writeText("");
-      alert("Screenshot dinonaktifkan.");
-      e.preventDefault();
-    }
-    // Blok Ctrl+S, Ctrl+U, F12, dll
-    if ((e.ctrlKey && e.key === "s") || (e.ctrlKey && e.key === "u") || e.key === "F12") {
-      alert("Akses ini dibatasi.");
-      e.preventDefault();
-    }
-  });
+  const key = e.key.toLowerCase(); // default untuk kombinasi umum
+
+  // ⛔ PrintScreen
+  if (key === "printscreen") {
+    navigator.clipboard.writeText("");
+    alert("Screenshot dinonaktifkan.");
+    e.preventDefault();
+  }
+
+  // ⛔ Ctrl+S, Ctrl+U, Ctrl+Shift+I, F12, Ctrl+P
+  if (
+    (e.ctrlKey && key === "s") ||
+    (e.ctrlKey && key === "u") ||
+    (e.ctrlKey && key === "p") ||
+    (e.ctrlKey && e.shiftKey && key === "i") ||
+    (key === "f12")
+  ) {
+    alert("Akses shortcut dibatasi.");
+    e.preventDefault();
+  }
+
+  // ⛔ Ctrl+C, Ctrl+X
+  if ((e.ctrlKey && key === "c") || (e.ctrlKey && key === "x")) {
+    alert("Menyalin tidak diperbolehkan.");
+    e.preventDefault();
+  }
+
+  // ⛔ Ctrl+A
+  if (e.ctrlKey && key === "a") {
+    e.preventDefault();
+  }
+
+  // ✅ Deteksi eksplisit Alt + Shift + S / R (tanpa tergantung huruf besar/kecil)
+  const rawKey = e.key;
+  if (e.altKey && e.shiftKey && (rawKey === "s" || rawKey === "S" || rawKey === "r" || rawKey === "R")) {
+    alert("Kombinasi Alt+Shift+" + rawKey + " dibatasi.");
+    e.preventDefault();
+  }
+});
+
+
+
 
   document.addEventListener("contextmenu", function (e) {
     e.preventDefault();
@@ -263,6 +347,57 @@
             }
         });
     });
+
+    const quizPopup = document.getElementById("quiz-popup");
+const quizQuestion = document.getElementById("quiz-question");
+const quizOptions = document.getElementById("quiz-options");
+
+function showQuiz(quiz) {
+    quizQuestion.innerText = quiz.question;
+    quizOptions.innerHTML = `
+        <button onclick="handleAnswer(this, 'A')" class="quiz-option w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition shadow">A. ${quiz.option_a}</button>
+        <button onclick="handleAnswer(this, 'B')" class="quiz-option w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition shadow">B. ${quiz.option_b}</button>
+        <button onclick="handleAnswer(this, 'C')" class="quiz-option w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition shadow">C. ${quiz.option_c}</button>
+        <button onclick="handleAnswer(this, 'D')" class="quiz-option w-full px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition shadow">D. ${quiz.option_d}</button>
+    `;
+    quizPopup.classList.remove("hidden");
+    video.pause();
+}
+
+
+function handleAnswer(button, answer) {
+    // Reset semua tombol ke warna semula
+    document.querySelectorAll(".quiz-option").forEach(btn => {
+        btn.classList.remove("bg-green-600", "font-semibold");
+        btn.classList.add("bg-indigo-500");
+    });
+
+    // Beri warna hijau pada tombol yang dipilih
+    button.classList.remove("bg-indigo-500");
+    button.classList.add("bg-green-600", "font-semibold");
+
+    // (Opsional) Tampilkan feedback atau simpan jawaban
+    console.log("Jawaban dipilih:", answer);
+}
+
+
+
+function closeQuiz() {
+    quizPopup.classList.add("hidden");
+    video.play();
+}
+
+video.addEventListener("timeupdate", () => {
+    const currentTime = Math.floor(video.currentTime);
+
+    quizzes.forEach(quiz => {
+        if (!quiz.shown && quiz.appear_time != null && currentTime >= quiz.appear_time) {
+            quiz.shown = true;
+            showQuiz(quiz);
+        }
+    });
+});
+
   </script>
 </body>
 </html>

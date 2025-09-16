@@ -17,26 +17,34 @@ class AuthController extends Controller
 
     public function register(Request $request)
 {
-    $request->validate([
-        'fullname' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'string', 'min:8', 'confirmed'],
-    ]);
+    $request->validate(
+        [
+            'fullname' => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],
+        // ⬇️  Pesan kustom
+        [
+            'email.unique' => 'Email sudah terdaftar di sistem.',
+            'email.email'  => 'Format email tidak valid.',
+            // contoh pesan lain (opsional)
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        ]
+    );
 
     $user = User::create([
-    'name' => $request->fullname,
-    'email' => $request->email,
-    'password' => Hash::make($request->password),
-    'role' => 'user',
-    'is_admin' => 0,
-    'subscription_status' => 'non-aktif', // ✅ tambahkan ini
-]);
+        'name'     => $request->fullname,
+        'email'    => $request->email,
+        'password' => Hash::make($request->password),
+        'role'     => 'user',
+        'is_admin' => 0,
+        'subscription_status' => 'non-aktif',
+    ]);
 
+    return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login untuk melanjutkan.');
 
-    Auth::login($user);
-
-    return redirect('/'); // arahkan ke beranda user setelah daftar
 }
+
 
     public function login(Request $request)
 {

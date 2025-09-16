@@ -108,8 +108,11 @@
   <header class="bg-indigo-600 text-white py-20 px-6 sm:px-12 md:px-20 flex flex-col md:flex-row items-center max-w-7xl mx-auto">
    <div class="md:w-1/2 space-y-6">
     <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-     Selamat Datang, {{ Auth::user()->name }}! Akses Pelatihan Pembersihan Sepatu Profesional Anda
-    </h1>
+  Selamat Datang, 
+  <span class="font-bold italic text-black">{{ Auth::user()->name }}</span>! 
+  Akses Pelatihan Pembersihan Sepatu Profesional Anda
+</h1>
+
     <p class="text-lg sm:text-xl text-indigo-200">
      Nikmati akses penuh ke semua video tutorial, materi eksklusif, dan sertifikat digital Anda.
     </p>
@@ -129,46 +132,61 @@
   </header>
   <!-- Features Section -->
   <section class="py-16 bg-white" id="features">
-   <div class="max-w-7xl mx-auto px-6 sm:px-12">
+  <div class="max-w-7xl mx-auto px-6 sm:px-12">
     <h2 class="text-3xl font-bold text-center text-indigo-700 mb-12">
-     Keuntungan Berlangganan Bersihin.Sepatu
+      Keuntungan Berlangganan Bersihin.Sepatu
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-     <div class="flex flex-col items-center text-center space-y-4 px-6">
-      <img alt="Icon representing unlimited access, an open lock with video play button" class="w-24 h-24" height="100" src="https://storage.googleapis.com/a1aa/image/a6832b88-0dcf-48fe-1d29-637c70a69eb2.jpg" width="100"/>
-      <h3 class="text-xl font-semibold text-indigo-600">
-       Akses Tanpa Batas
-      </h3>
-      <p class="text-gray-600">
-       Nikmati akses penuh ke semua video tutorial dan materi eksklusif kapan saja dan di mana saja.
-      </p>
-     </div>
-     <div class="flex flex-col items-center text-center space-y-4 px-6">
-      <img alt="Icon representing certificate, a digital certificate with a ribbon and checkmark" class="w-24 h-24" height="100" src="https://storage.googleapis.com/a1aa/image/4f1c215a-fb43-450e-fc5b-979b153083e8.jpg" width="100"/>
-      <h3 class="text-xl font-semibold text-indigo-600">
-       Sertifikat Digital Resmi
-      </h3>
-      <p class="text-gray-600">
-       Dapatkan sertifikat digital resmi sebagai bukti keahlian Anda setelah menyelesaikan pelatihan.
-      </p>
-     </div>
-     <div class="flex flex-col items-center text-center space-y-4 px-6">
-      <img alt="Icon representing content protection, a shield with a lock symbol" class="w-24 h-24" height="100" src="https://storage.googleapis.com/a1aa/image/de43640d-6279-4c2c-33c1-271813001713.jpg" width="100"/>
-      <h3 class="text-xl font-semibold text-indigo-600">
-       Proteksi Konten Maksimal
-      </h3>
-      <p class="text-gray-600">
-       Materi kami dilindungi dengan teknologi anti screen recording untuk menjaga kualitas dan keaslian.
-      </p>
-     </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-center">
+
+      <!-- Fitur 1: Akses Tanpa Batas -->
+      <div class="flex flex-col items-center space-y-4">
+        <img src="https://storage.googleapis.com/a1aa/image/a6832b88-0dcf-48fe-1d29-637c70a69eb2.jpg"
+             alt="Akses Tanpa Batas" class="w-20 h-20 mx-auto">
+        <h3 class="text-lg font-semibold text-indigo-600">Akses Tanpa Batas</h3>
+        <p class="text-gray-600 text-sm">
+          Nikmati akses penuh ke semua pelatihan dan materi eksklusif kapan saja dan di mana saja.
+        </p>
+      </div>
+
+      <!-- Fitur 2: Sertifikat Digital -->
+      <div class="flex flex-col items-center space-y-4">
+        <img src="https://storage.googleapis.com/a1aa/image/4f1c215a-fb43-450e-fc5b-979b153083e8.jpg"
+             alt="Sertifikat Digital" class="w-20 h-20 mx-auto">
+        <h3 class="text-lg font-semibold text-indigo-600">Sertifikat Digital Resmi</h3>
+        <p class="text-gray-600 text-sm">
+          Dapatkan sertifikat digital resmi sebagai bukti keahlian Anda setelah menyelesaikan pelatihan.
+        </p>
+      </div>
+
+      <!-- Fitur 3: Materi Usaha & Branding -->
+      <div class="flex flex-col items-center space-y-4">
+        <img src="https://static.thenounproject.com/png/business-training-icon-2675600-512.png"
+             alt="Usaha & Branding" class="w-20 h-20 mx-auto">
+        <h3 class="text-lg font-semibold text-indigo-600">Materi Usaha & Branding</h3>
+        <p class="text-gray-600 text-sm">
+          Selain pelatihan teknis, Anda juga mendapatkan panduan membangun usaha dan tips branding profesional.
+        </p>
+      </div>
+
+      <!-- Fitur 4: Lihat Progress Pelatihan -->
+      <div class="flex flex-col items-center space-y-4">
+        <img src="https://static.thenounproject.com/png/progress-monitoring-icon-7882100-512.png"
+             alt="Progress Pelatihan" class="w-20 h-20 mx-auto">
+        <h3 class="text-lg font-semibold text-indigo-600">Lihat Progress Pelatihan</h3>
+        <p class="text-gray-600 text-sm">
+          Lacak perkembangan Anda, lihat nilai quiz, dan pastikan Anda tidak melewatkan materi penting.
+        </p>
+      </div>
+
     </div>
-   </div>
-  </section>
+  </div>
+</section>
+
   <!-- Courses Section -->
 <section class="py-16 bg-indigo-50" id="courses">
   <div class="max-w-7xl mx-auto px-6 sm:px-12">
     <h2 class="text-3xl font-bold text-indigo-700 mb-12 text-center">
-      Video Tutorial Pelatihan
+      Daftar Pelatihan
     </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

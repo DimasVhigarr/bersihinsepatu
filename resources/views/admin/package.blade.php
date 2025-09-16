@@ -37,7 +37,7 @@
    </div>
   </nav>
 
-  <div class="flex ">
+  <div class="flex flex-1">
    <!-- Sidebar -->
    <aside
     class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto"
@@ -76,14 +76,14 @@
       class="flex items-center space-x-3 text-indigo-700 font-semibold hover:text-indigo-900"
      >
       <i class="fas fa-tag w-5"></i>
-      <span>Paket Berlangganan</span>
+      <span>Management Paket</span>
      </a>
      <a
       href="/admin/courses"
       class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700"
      >
       <i class="fas fa-video w-5"></i>
-      <span>Video Courses</span>
+      <span>Management Courses</span>
      </a>
      <a href="/admin/quiz" 
      class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">

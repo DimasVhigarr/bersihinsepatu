@@ -59,6 +59,9 @@
         <a href="/admin/courses" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
           <i class="fas fa-video w-5"></i><span>Video Courses</span>
         </a>
+        <a href="/admin/quiz" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
+          <i class="fas fa-solid fa-paperclip w-5"></i><span>Hasil Quiz</span>
+        </a>
         <a href="/admin/subscriptions" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
           <i class="fas fa-user-shield w-5"></i><span>Subscriptions</span>
         </a>
@@ -77,7 +80,7 @@
     <!-- Overlay -->
     <div id="mobile-overlay" class="hidden fixed inset-0 bg-black bg-opacity-40 z-40" onclick="closeMobileMenu()"></div>
 
-    <div class="flex">
+    <div class="flex flex-1">
       <!-- Desktop Sidebar -->
       <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 overflow-y-auto" aria-label="Sidebar">
         <div class="sticky top-0 bg-white z-10 border-b border-gray-200 p-6 flex flex-col items-center space-y-2">
@@ -93,10 +96,10 @@
             <i class="fas fa-users w-5"></i><span>Users</span>
           </a>
           <a href="/admin/packages" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
-            <i class="fas fa-tag w-5"></i><span>Paket Berlangganan</span>
+            <i class="fas fa-tag w-5"></i><span>Management Paket</span>
           </a>
           <a href="/admin/courses" class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
-            <i class="fas fa-video w-5"></i><span>Video Courses</span>
+            <i class="fas fa-video w-5"></i><span>Management Courses</span>
           </a>
           <a href="/admin/quiz" 
           class="flex items-center space-x-3 text-gray-700 hover:text-indigo-700">
@@ -175,8 +178,16 @@
     <a href="/admin/courses" class="group">
         <div class="bg-white rounded-lg shadow p-10 flex flex-col items-center text-center hover:shadow-lg transition">
             <i class="fas fa-video text-indigo-600 text-6xl mb-3 group-hover:text-indigo-800"></i>
-            <p class="text-gray-500">Total Video</p>
+            <p class="text-gray-500">Total Course</p>
             <p class="text-3xl font-semibold text-indigo-700">{{ $totalCourses }}</p>
+        </div>
+    </a>
+    <!-- Total Hasil Quiz -->
+    <a href="/admin/quiz" class="group">
+        <div class="bg-white rounded-lg shadow p-10 flex flex-col items-center text-center hover:shadow-lg transition">
+            <i class="fas fa-paperclip text-indigo-600 text-6xl mb-3 group-hover:text-indigo-800"></i>
+            <p class="text-gray-500">Total Hasil Quiz</p>
+            <p class="text-3xl font-semibold text-indigo-700">{{ $totalQuizes }}</p>
         </div>
     </a>
 

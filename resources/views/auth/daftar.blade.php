@@ -147,21 +147,21 @@
       />
      </div>
      <div>
-      <label
-       for="email"
-       class="block text-sm font-medium text-gray-700 mb-1"
-       >Email</label
-      >
-      <input
-       type="email"
-       name="email"
-       id="email"
-       autocomplete="email"
-       required
-       placeholder="you@example.com"
-       class="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600"
-      />
-     </div>
+  <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+  <input
+     type="email"
+     name="email"
+     id="email"
+     value="{{ old('email') }}"
+     required
+     placeholder="you@example.com"
+     class="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600"
+  />
+  @error('email')
+    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+  @enderror
+</div>
+
      <div>
       <label
        for="password"

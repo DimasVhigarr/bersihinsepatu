@@ -119,13 +119,13 @@
      Kami percaya bahwa pelatihan yang efektif adalah pelatihan yang dilakukan secara langsung dan praktis, bukan hanya sekadar menonton video di platform umum. Bersihin.Sepatu hadir sebagai solusi terpercaya untuk Anda yang ingin mengembangkan keahlian dan usaha pembersihan sepatu secara profesional.
     </p>
     <img alt="Experienced shoe cleaning trainer demonstrating techniques to a group of students in a bright classroom" class="rounded-lg shadow-lg mx-auto" height="400" src="{{ asset('images/logo.jpg') }}" width="600"/>
-    <h2 class="text-2xl font-semibold text-indigo-700 mt-12">
+    <h2 class="text-2xl font-semibold text-indigo-700 mt-12 text-center">
      Misi Kami
     </h2>
     <p>
      Memberikan pelatihan pembersihan sepatu yang berkualitas tinggi dengan pendekatan praktis dan langsung dari para ahli, serta mendukung pengembangan usaha pembersihan sepatu di Indonesia.
     </p>
-    <h2 class="text-2xl font-semibold text-indigo-700 mt-8">
+    <h2 class="text-2xl font-semibold text-indigo-700 mt-8 text-center">
      Visi Kami
     </h2>
     <p>
